@@ -18,6 +18,10 @@ contract Juristopia {
         return keccak256(abi.encodePacked(x, y, z));
     }
 
+    function exponent(UD60x18 n) public pure returns (UD60x18) {
+        return n.exp();
+    }
+
     function spawnCost(int x, int y, int z) public view returns (uint256) {
         bytes32 coord = hashCoords(x, y, z);
         uint16 density = cubeToDensity[coord];
