@@ -8,34 +8,65 @@ struct World {
     string description;
 }
 
+struct Point {
+    int128 x;
+    int128 y;
+    int128 z;
+}
+
 contract Juristopia {
-    uint256 public constant CUBE_SIZE = 10;
+    int128 public halfSide;
+    uint256 public spawnBaseCost;
     //constant
     mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => uint16) public cubeToDensity;
 
-    function hashCoords(int x, int y, int z) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(x, y, z));
+    constructor(int128 _halfSide) {
+        spawnBaseCost = 0.1 ether;
+        halfSide = _halfSide;
     }
 
-    function exponent(UD60x18 n) public pure returns (UD60x18) {
-        return n.exp();
+    function hashCoords(Point memory p) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(p.x, p.y, p.z));
     }
 
-    function spawnCost(int x, int y, int z) public view returns (uint256) {
-        bytes32 coord = hashCoords(x, y, z);
+    function containingCube(Point memory p) public view returns (Point memory) {
+        int128 SIDE = halfSide * 2;
+        int128 x = p.x >= 0 ? p.x : -p.x;
+        int128 y = p.y >= 0 ? p.y : -p.y;
+        int128 z = p.z >= 0 ? p.z : -p.z;
+        x = x - (x % SIDE) + halfSide;
+        y = y - (y % SIDE) + halfSide;
+        z = z - (z % SIDE) + halfSide;
+        return
+            Point({
+                x: p.x >= 0 ? x : -x,
+                y: p.y >= 0 ? y : -y,
+                z: p.z >= 0 ? z : -z
+            });
+    }
+
+    function spawnCost(Point memory p) public view returns (uint256) {
+        int128 SIDE = halfSide * 2;
+        require(p.x % SIDE != 0, "x is invalid: on cube edge");
+        require(p.y % SIDE != 0, "y is invalid: on cube edge");
+        require(p.z % SIDE != 0, "z is invalid: on cube edge");
+        Point memory cc = containingCube(p);
+        bytes32 coord = hashCoords(cc);
+        /*
+        // find the cube in the coords
+        // calculate how far the coords are from the edge. Take CUBE_SIZE as the edge length
         uint16 density = cubeToDensity[coord];
         return density * density * density;
+        */
     }
 
     function spawnWorld(
-        int x,
-        int y,
-        int z,
+        Point memory p,
         string memory name,
         string memory description
     ) public {
-        bytes32 coord = hashCoords(x, y, z);
+        bytes32 coord = hashCoords(p);
         coordToWorld[coord] = World({name: name, description: description});
         cubeToDensity[coord] += 1;
     }
