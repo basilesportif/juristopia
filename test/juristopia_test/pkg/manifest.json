@@ -1,0 +1,13 @@
+[
+    {
+        "process_name": "juristopia_test",
+        "process_wasm_path": "/juristopia_test.wasm",
+        "on_exit": "Restart",
+        "request_networking": false,
+        "request_capabilities": [],
+        "grant_capabilities": [
+            "juristopia:juristopia:template.os"
+        ],
+        "public": true
+    }
+]
