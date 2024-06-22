@@ -13,11 +13,17 @@ contract JuristopiaTest is Test {
         juristopia = new Juristopia();
     }
 
+    /*
+test notes
+- we want to multiply a wei cost by this 
+*/
     function test_Exponent() public {
-        UD60x18 n = ud(2.0e18);
-        UD60x18 e = juristopia.exponent(n);
-        console.log("e: %i", convert(e));
-        assertEq(convert(e), 7);
+        UD60x18 n = convert(2);
+        UD60x18 e2 = juristopia.exponent(n);
+        UD60x18 cost = e2.mul(convert(1 ether));
+        console.log("e: %i", convert(e2));
+        assertEq(convert(e2), 7);
+        assertEq(convert(cost), 7389056098930650223);
     }
 
     /*
