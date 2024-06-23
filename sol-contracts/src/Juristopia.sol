@@ -6,6 +6,8 @@ import {SD59x18, sd, convert} from "@prb/math/src/SD59x18.sol";
 struct World {
     string name;
     string description;
+    Point location;
+    Point containingCube;
 }
 
 struct Point {
@@ -19,7 +21,7 @@ contract Juristopia {
     uint256 public spawnBaseCost;
     SD59x18 public spawnCostGrowthRate;
     //constant
-    mapping(bytes32 => World) public cubeCoordToWorld;
+    mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => int32) public cubeCoordToDensity;
 
     constructor(
@@ -40,7 +42,7 @@ contract Juristopia {
     function pointDistance(
         Point memory p1,
         Point memory p2
-    ) public view returns (int256) {
+    ) public pure returns (int256) {
         int128 squareSum = (p1.x - p2.x) *
             (p1.x - p2.x) +
             (p1.y - p2.y) *
@@ -85,16 +87,32 @@ contract Juristopia {
         Point memory p,
         string memory name,
         string memory description
-    ) public {
+    ) public payable {
+        require(bytes(name).length > 0, "Name cannot be empty");
+        require(bytes(description).length > 0, "Description cannot be empty");
+        require(bytes(name).length <= 32, "Name must be 32 characters or less");
         int128 side = cubeHalfSide * 2;
         require(p.x % side != 0, "x is invalid: on cube edge");
         require(p.y % side != 0, "y is invalid: on cube edge");
         require(p.z % side != 0, "z is invalid: on cube edge");
         Point memory cc = containingCube(p);
-        bytes32 coord = hashCoords(p);
-        int32 density = cubeCoordToDensity[coord];
+        bytes32 worldCoord = hashCoords(p);
+        bytes32 cubeCoord = hashCoords(cc);
+        int32 density = cubeCoordToDensity[cubeCoord];
         uint256 cost = spawnCost(pointDistance(p, cc), density);
-        cubeCoordToWorld[coord] = World({name: name, description: description});
-        cubeCoordToDensity[coord] += 1;
+
+        require(msg.value >= cost, "Not enough ETH to spawn this world");
+        require(
+            bytes(coordToWorld[worldCoord].name).length == 0,
+            "World already exists"
+        );
+
+        coordToWorld[worldCoord] = World({
+            name: name,
+            description: description,
+            location: p,
+            containingCube: cc
+        });
+        cubeCoordToDensity[cubeCoord] += 1;
     }
 }

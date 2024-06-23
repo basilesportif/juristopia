@@ -17,7 +17,7 @@ contract JuristopiaTest is Test {
         juristopia = new Juristopia(HALF_SIDE, BASE_COST, GROWTH_RATE);
     }
 
-    function test_ContainingCube() public {
+    function test_ContainingCube() public view {
         //points in 3D space
         Point[5] memory inputs = [
             Point({x: 1, y: 1, z: 1}),
@@ -45,7 +45,7 @@ contract JuristopiaTest is Test {
         }
     }
 
-    function test_PointDistance() public {
+    function test_PointDistance() public view {
         Point memory p1 = Point({x: 1, y: 2, z: -5});
         Point memory p2 = Point({x: 4, y: 6, z: 7});
         assertEq(juristopia.pointDistance(p1, p2), 13);
@@ -59,5 +59,48 @@ contract JuristopiaTest is Test {
         assertEq(juristopia.spawnCost(0, 0), 0.1 ether);
         assertEq(juristopia.spawnCost(1, 0), 0.149182469764127031 ether);
         assertEq(juristopia.spawnCost(3, 1), 0.49530324243951148 ether);
+    }
+
+    function test_SpawnWorld() public {
+        Point memory testPoint = Point({x: 7, y: 8, z: 9});
+        string memory testName = "Test World";
+        string memory testDescription = "A test world description";
+
+        // Get the containing cube and its initial density
+        Point memory containingCube = juristopia.containingCube(testPoint);
+        bytes32 cubeCoord = juristopia.hashCoords(containingCube);
+        int32 initialDensity = juristopia.cubeCoordToDensity(cubeCoord);
+
+        // Calculate spawn cost
+        uint256 spawnCost = juristopia.spawnCost(
+            juristopia.pointDistance(testPoint, containingCube),
+            initialDensity
+        );
+
+        // Spawn the world
+        juristopia.spawnWorld{value: spawnCost}(
+            testPoint,
+            testName,
+            testDescription
+        );
+
+        // Check if the world exists at the given coordinates
+        bytes32 worldCoord = juristopia.hashCoords(testPoint);
+        (string memory name, string memory description, , ) = juristopia
+            .coordToWorld(worldCoord);
+        assertEq(name, testName, "World name does not match");
+        assertEq(
+            description,
+            testDescription,
+            "World description does not match"
+        );
+
+        // Check if the density in the containing cube has incremented
+        int32 newDensity = juristopia.cubeCoordToDensity(cubeCoord);
+        assertEq(
+            newDensity,
+            initialDensity + 1,
+            "Density did not increment correctly"
+        );
     }
 }
