@@ -20,6 +20,6 @@ contract MathExamplesTest is Test {
         SD59x18 y2Sd = convert(y2);
         SD59x18 y2SdSqrt = y2Sd.sqrt();
         int256 y2SdSqrtInt = convert(y2SdSqrt);
-        console.logInt(y2SdSqrtInt);
+        // console.logInt(y2SdSqrtInt);
     }
 }

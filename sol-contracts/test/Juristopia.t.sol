@@ -9,9 +9,12 @@ import "forge-std/console.sol";
 
 contract JuristopiaTest is Test {
     Juristopia juristopia;
+    int128 public constant HALF_SIDE = 5;
+    uint256 public constant BASE_COST = 0.1 ether;
+    SD59x18 public GROWTH_RATE = sd(0.4e18);
 
     function setUp() public {
-        juristopia = new Juristopia(5, 1 ether, 2);
+        juristopia = new Juristopia(HALF_SIDE, BASE_COST, GROWTH_RATE);
     }
 
     function test_ContainingCube() public {
@@ -50,5 +53,12 @@ contract JuristopiaTest is Test {
         Point memory p3 = Point({x: -1, y: -1, z: 3});
         Point memory p4 = Point({x: 4, y: -10, z: 17});
         assertEq(juristopia.pointDistance(p3, p4), 17);
+    }
+
+    function test_SpawnCost() public {
+        // Test cases: [distanceFromCenter, density, expectedCost]
+        assertEq(juristopia.spawnCost(0, 0), 0.1 ether);
+        assertEq(juristopia.spawnCost(1, 0), 0.149182469764127031 ether);
+        assertEq(juristopia.spawnCost(3, 1), 0.49530324243951148 ether);
     }
 }
