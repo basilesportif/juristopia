@@ -45,7 +45,10 @@ contract JuristopiaTest is Test {
     function test_PointDistance() public {
         Point memory p1 = Point({x: 1, y: 2, z: -5});
         Point memory p2 = Point({x: 4, y: 6, z: 7});
-        int256 distance = juristopia.pointDistance(p1, p2);
-        console.logInt(distance);
+        assertEq(juristopia.pointDistance(p1, p2), 13);
+
+        Point memory p3 = Point({x: -1, y: -1, z: 3});
+        Point memory p4 = Point({x: 4, y: -10, z: 17});
+        assertEq(juristopia.pointDistance(p3, p4), 17);
     }
 }
