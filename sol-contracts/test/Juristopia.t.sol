@@ -11,7 +11,7 @@ contract JuristopiaTest is Test {
     Juristopia juristopia;
 
     function setUp() public {
-        juristopia = new Juristopia(5);
+        juristopia = new Juristopia(5, 1 ether, 2);
     }
 
     function test_ContainingCube() public {

@@ -15,15 +15,21 @@ struct Point {
 }
 
 contract Juristopia {
-    int128 public halfSide;
+    int128 public cubeHalfSide;
     uint256 public spawnBaseCost;
+    uint256 public spawnCostGrowthRate;
     //constant
-    mapping(bytes32 => World) public coordToWorld;
-    mapping(bytes32 => uint16) public cubeToDensity;
+    mapping(bytes32 => World) public cubeCoordToWorld;
+    mapping(bytes32 => uint16) public cubeCoordToDensity;
 
-    constructor(int128 _halfSide) {
-        spawnBaseCost = 0.1 ether;
-        halfSide = _halfSide;
+    constructor(
+        int128 _cubeHalfSide,
+        uint256 _spawnBaseCost,
+        uint256 _spawnCostGrowthRate
+    ) {
+        cubeHalfSide = _cubeHalfSide;
+        spawnBaseCost = _spawnBaseCost;
+        spawnCostGrowthRate = _spawnCostGrowthRate;
     }
 
     function hashCoords(Point memory p) public pure returns (bytes32) {
@@ -45,30 +51,37 @@ contract Juristopia {
     }
 
     function containingCube(Point memory p) public view returns (Point memory) {
-        int128 SIDE = halfSide * 2;
-        int128 x = p.x >= 0 ? p.x : -p.x;
-        int128 y = p.y >= 0 ? p.y : -p.y;
-        int128 z = p.z >= 0 ? p.z : -p.z;
-        x = x - (x % SIDE) + halfSide;
-        y = y - (y % SIDE) + halfSide;
-        z = z - (z % SIDE) + halfSide;
+        int128 side = cubeHalfSide * 2;
+        int128 absX = p.x >= 0 ? p.x : -p.x;
+        int128 absY = p.y >= 0 ? p.y : -p.y;
+        int128 absZ = p.z >= 0 ? p.z : -p.z;
+        absX = absX - (absX % side) + cubeHalfSide;
+        absY = absY - (absY % side) + cubeHalfSide;
+        absZ = absZ - (absZ % side) + cubeHalfSide;
         return
             Point({
-                x: p.x >= 0 ? x : -x,
-                y: p.y >= 0 ? y : -y,
-                z: p.z >= 0 ? z : -z
+                x: p.x >= 0 ? absX : -absX,
+                y: p.y >= 0 ? absY : -absY,
+                z: p.z >= 0 ? absZ : -absZ
             });
     }
 
     // need 3D distance from the cube center to the point
     // cost increases exponentially with distance
     function spawnCost(Point memory p) public view returns (uint256) {
-        int128 SIDE = halfSide * 2;
-        require(p.x % SIDE != 0, "x is invalid: on cube edge");
-        require(p.y % SIDE != 0, "y is invalid: on cube edge");
-        require(p.z % SIDE != 0, "z is invalid: on cube edge");
+        int128 side = cubeHalfSide * 2;
+        require(p.x % side != 0, "x is invalid: on cube edge");
+        require(p.y % side != 0, "y is invalid: on cube edge");
+        require(p.z % side != 0, "z is invalid: on cube edge");
         Point memory cc = containingCube(p);
+        SD59x18 distance = convert(int256(pointDistance(p, cc)));
+        SD59x18 cgr = convert(int256(spawnCostGrowthRate));
+        SD59x18 cost = convert(int256(spawnBaseCost)).mul(
+            distance.mul(cgr).exp()
+        );
+
         bytes32 coord = hashCoords(cc);
+        return uint256(convert(cost));
         /*
         // find the cube in the coords
         // calculate how far the coords are from the edge. Take CUBE_SIZE as the edge length
@@ -83,7 +96,7 @@ contract Juristopia {
         string memory description
     ) public {
         bytes32 coord = hashCoords(p);
-        coordToWorld[coord] = World({name: name, description: description});
-        cubeToDensity[coord] += 1;
+        cubeCoordToWorld[coord] = World({name: name, description: description});
+        cubeCoordToDensity[coord] += 1;
     }
 }
