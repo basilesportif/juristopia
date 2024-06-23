@@ -56,7 +56,6 @@ contract JuristopiaTest is Test {
     }
 
     function test_SpawnCost() public {
-        // Test cases: [distanceFromCenter, density, expectedCost]
         assertEq(juristopia.spawnCost(0, 0), 0.1 ether);
         assertEq(juristopia.spawnCost(1, 0), 0.149182469764127031 ether);
         assertEq(juristopia.spawnCost(3, 1), 0.49530324243951148 ether);
