@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.19;
 
-import {UD60x18, ud} from "@prb/math/src/UD60x18.sol";
+import {SD59x18, sd, convert} from "@prb/math/src/SD59x18.sol";
 
 struct World {
     string name;
@@ -30,6 +30,20 @@ contract Juristopia {
         return keccak256(abi.encodePacked(p.x, p.y, p.z));
     }
 
+    /** @return the rounded 3D distance between two points */
+    function pointDistance(
+        Point memory p1,
+        Point memory p2
+    ) public pure returns (int256) {
+        int128 squareSum = (p1.x - p2.x) *
+            (p1.x - p2.x) +
+            (p1.y - p2.y) *
+            (p1.y - p2.y) +
+            (p1.z - p2.z) *
+            (p1.z - p2.z);
+        return convert(convert(squareSum).sqrt());
+    }
+
     function containingCube(Point memory p) public view returns (Point memory) {
         int128 SIDE = halfSide * 2;
         int128 x = p.x >= 0 ? p.x : -p.x;
@@ -46,6 +60,8 @@ contract Juristopia {
             });
     }
 
+    // need 3D distance from the cube center to the point
+    // cost increases exponentially with distance
     function spawnCost(Point memory p) public view returns (uint256) {
         int128 SIDE = halfSide * 2;
         require(p.x % SIDE != 0, "x is invalid: on cube edge");
