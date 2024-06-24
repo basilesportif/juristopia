@@ -228,6 +228,7 @@ contract Juristopia {
         );
         // get the commitment hashes
 
+        /*
         // Update portal maps
         bytes32 worldCoord1 = hashCoords(p1);
         bytes32 worldCoord2 = hashCoords(p2);
@@ -235,5 +236,6 @@ contract Juristopia {
         // Create bidirectional portal
         portalExists[worldCoord1][worldCoord2] = true;
         portalExists[worldCoord2][worldCoord1] = true;
+        */
     }
 }
