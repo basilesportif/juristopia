@@ -105,7 +105,6 @@ contract JuristopiaTest is Test {
             initialDensity,
             juristopia.pointDistance(testPoint, containingCube)
         );
-        console.log("spawnCost first: %i", spawnCost);
 
         // Spawn the world
         juristopia.spawnWorld{value: spawnCost}(
@@ -133,10 +132,8 @@ contract JuristopiaTest is Test {
             "Density did not increment correctly"
         );
 
-        // Log the spawn cost for the second attempt
         int256 distance = juristopia.pointDistance(testPoint, containingCube);
         uint256 secondSpawnCost = juristopia.spawnCost(newDensity, distance);
-        console.log("spawnCost second: %s", secondSpawnCost);
 
         vm.expectRevert("World already exists");
         juristopia.spawnWorld{value: secondSpawnCost}(
@@ -146,7 +143,7 @@ contract JuristopiaTest is Test {
         );
     }
 
-    function test_BadSpawnWorld() public {
+    function test_BadSpawnWorlds() public {
         Point memory testPoint = Point({x: 7, y: 8, z: 9});
         string memory testName = "Test World";
         string memory testDescription = "A test world description";
@@ -161,15 +158,18 @@ contract JuristopiaTest is Test {
             initialDensity,
             juristopia.pointDistance(testPoint, containingCube)
         );
-        /*
-        console.log("spawnCost second: %i", spawnCost);
-
         // Spawn the world
         juristopia.spawnWorld{value: spawnCost}(
             testPoint,
             testName,
             testDescription
         );
+
+        spawnCost = juristopia.spawnCost(
+            initialDensity + 1,
+            juristopia.pointDistance(testPoint, containingCube)
+        );
+
         // Attempt to spawn another world at the same coordinates
         vm.expectRevert("World already exists");
         juristopia.spawnWorld{value: spawnCost}(
@@ -178,46 +178,45 @@ contract JuristopiaTest is Test {
             "This should fail"
         );
 
-       
+        Point memory testPoint2 = Point({x: 2, y: 2, z: 2});
+        uint256 spawnCost2 = juristopia.spawnCost(
+            initialDensity + 1,
+            juristopia.pointDistance(testPoint2, containingCube)
+        );
         // Attempt to spawn a world with insufficient ETH
         vm.expectRevert("Not enough ETH to spawn this world");
-        juristopia.spawnWorld{value: spawnCost - 1}(
-            Point({x: 10, y: 11, z: 12}),
+        juristopia.spawnWorld{value: spawnCost2 - 1}(
+            testPoint2,
             "Underfunded World",
             "This should also fail"
         );
 
         // Attempt to spawn a world with an empty name
         vm.expectRevert("Name cannot be empty");
-        juristopia.spawnWorld{value: spawnCost}(
-            Point({x: 13, y: 14, z: 15}),
+        juristopia.spawnWorld{value: spawnCost2}(
+            testPoint2,
             "",
             "This should fail due to empty name"
         );
 
         // Attempt to spawn a world with an empty description
         vm.expectRevert("Description cannot be empty");
-        juristopia.spawnWorld{value: spawnCost}(
-            Point({x: 16, y: 17, z: 18}),
-            "Valid Name",
-            ""
-        );
+        juristopia.spawnWorld{value: spawnCost2}(testPoint2, "Valid Name", "");
 
         // Attempt to spawn a world with a name that's too long
         vm.expectRevert("Name must be 32 characters or less");
-        juristopia.spawnWorld{value: spawnCost}(
-            Point({x: 19, y: 20, z: 21}),
+        juristopia.spawnWorld{value: spawnCost2}(
+            testPoint2,
             "This name is way too long and should cause an error",
             "Valid description"
         );
 
         // Attempt to spawn a world on a cube edge
         vm.expectRevert("x is invalid: on cube edge");
-        juristopia.spawnWorld{value: spawnCost}(
+        juristopia.spawnWorld{value: spawnCost2}(
             Point({x: int128(HALF_SIDE * 2), y: 22, z: 23}),
             "Edge World",
             "This should fail due to being on a cube edge"
         );
-        */
     }
 }
