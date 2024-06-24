@@ -74,6 +74,22 @@ contract Juristopia {
         portalDistanceGrowthFactor = _portalDistanceGrowthFactor;
     }
 
+    /**
+     * @dev Event emitted when a new world is spawned
+     * @param worldCoord The hashed coordinates of the spawned world
+     * @param name The name of the spawned world
+     * @param location The 3D coordinates of the spawned world
+     * @param containingCube The center coordinates of the cube containing the spawned world
+     * @param commitmentHash The hash commitment for the world state and ZK transition function
+     */
+    event WorldSpawned(
+        bytes32 indexed worldCoord,
+        string name,
+        Point location,
+        Point containingCube,
+        bytes32 commitmentHash
+    );
+
     modifier onlyGod() {
         require(msg.sender == god, "Only God can perform this action");
         _;
@@ -201,6 +217,7 @@ contract Juristopia {
             commitmentHash: commitmentHash
         });
         cubeCoordToDensity[cubeCoord] += 1;
+        emit WorldSpawned(worldCoord, name, p, cc, commitmentHash);
     }
 
     function createPortalCost(int256 distance) public view returns (uint256) {

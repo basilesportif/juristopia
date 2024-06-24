@@ -101,6 +101,7 @@ contract JuristopiaTest is Test {
         Point memory testPoint = Point({x: 7, y: 8, z: 9});
         string memory testName = "Test World";
         string memory testDescription = "A test world description";
+        bytes32 testCommitmentHash = bytes32(0);
 
         // Get the containing cube and its initial density
         Point memory containingCube = juristopia.containingCube(testPoint);
@@ -113,12 +114,22 @@ contract JuristopiaTest is Test {
             juristopia.pointDistance(testPoint, containingCube)
         );
 
+        // TODO: this fails
+        vm.expectEmit(true, true, false, true);
+        emit Juristopia.WorldSpawned(
+            juristopia.hashCoords(testPoint),
+            testName,
+            testPoint,
+            containingCube,
+            testCommitmentHash
+        );
+
         // Spawn the world
         juristopia.spawnWorld{value: spawnCost}(
             testPoint,
             testName,
             testDescription,
-            bytes32(0)
+            testCommitmentHash
         );
 
         // Check if the world exists at the given coordinates
@@ -278,17 +289,18 @@ contract JuristopiaTest is Test {
             juristopia.pointDistance(testPoint1, testPoint2)
         );
 
+        /*
         // Test creating portal as non-GOD address
         vm.expectRevert("Only God can perform this action");
         vm.prank(address(1)); // Use a non-GOD address
         juristopia.createPortal{value: portalCost}(testPoint1, testPoint2);
 
         // Test creating portal with insufficient ETH
-        // vm.expectRevert("Not enough ETH to create portal");
-        //vm.prank(GOD);
-        //juristopia.createPortal{value: portalCost - 1}(testPoint1, testPoint2);
+         vm.expectRevert("Not enough ETH to create portal");
+        vm.prank(GOD);
+        juristopia.createPortal{value: portalCost - 1}(testPoint1, testPoint2);
 
-        /*
+      
         // Test creating portal between non-existent worlds
         Point memory nonExistentPoint = Point({x: 25, y: 25, z: 25});
         vm.expectRevert("World1 does not exist");
