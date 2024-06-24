@@ -3,17 +3,44 @@ pragma solidity >=0.8.19;
 
 import {SD59x18, sd, convert} from "@prb/math/src/SD59x18.sol";
 
+/**
+ * @title World
+ * @dev Represents a world in the Juristopia universe
+ * @notice This struct contains all the necessary information to define a world
+ */
 struct World {
+    /**
+     * @dev The name of the world
+     * @notice Must be non-empty and 32 characters or less
+     */
     string name;
+    /**
+     * @dev A description of the world
+     * @notice Must be non-empty
+     */
     string description;
+    /**
+     * @dev The 3D coordinates of the world's location
+     */
     Point location;
+    /**
+     * @dev The center coordinates of the cube containing this world
+     */
     Point containingCube;
+    /**
+     * @dev A hash commitment for world state and ZK transition function
+     */
+    bytes32 commitmentHash;
 }
-
 struct Point {
     int128 x;
     int128 y;
     int128 z;
+}
+
+struct Portal {
+    Point world1;
+    Point world2;
 }
 
 contract Juristopia {
@@ -26,6 +53,7 @@ contract Juristopia {
 
     mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => int32) public cubeCoordToDensity;
+    mapping(bytes32 => mapping(bytes32 => bool)) public portalExists;
 
     constructor(
         int128 _cubeHalfSide,
@@ -135,7 +163,8 @@ contract Juristopia {
     function spawnWorld(
         Point memory p,
         string memory name,
-        string memory description
+        string memory description,
+        bytes32 commitmentHash
     ) public payable {
         require(bytes(name).length > 0, "Name cannot be empty");
         require(bytes(description).length > 0, "Description cannot be empty");
@@ -160,22 +189,20 @@ contract Juristopia {
             name: name,
             description: description,
             location: p,
-            containingCube: cc
+            containingCube: cc,
+            commitmentHash: commitmentHash
         });
         cubeCoordToDensity[cubeCoord] += 1;
     }
 
     function createPortalCost(int256 distance) public view returns (uint256) {
-        SD59x18 distanceFactor = convert(distance).mul(
-            portalDistanceGrowthFactor
-        );
         SD59x18 cost = convert(int256(portalBaseCost)).mul(
-            distanceFactor.exp()
+            convert(distance).mul(portalDistanceGrowthFactor).exp()
         );
         return uint256(convert(cost));
     }
 
-    function createPortal(Point memory p1, Point memory p2) public {
+    function createPortal(Point memory p1, Point memory p2) public payable {
         require(
             bytes(coordToWorld[hashCoords(p1)].name).length > 0,
             "World1 does not exist"
@@ -184,17 +211,17 @@ contract Juristopia {
             bytes(coordToWorld[hashCoords(p2)].name).length > 0,
             "World2 does not exist"
         );
-
-        int256 distance = pointDistance(p1, p2);
-        uint256 cost = uint256(
-            convert(
-                sd(BASE_COST).mul(
-                    PORTAL_DISTANCE_GROWTH_FACTOR.pow(convert(distance))
-                )
-            )
+        require(
+            msg.value >= createPortalCost(pointDistance(p1, p2)),
+            "Not enough ETH to create portal"
         );
-        require(msg.value >= cost, "Not enough ETH to create portal");
 
-        // TODO: Implement portal creation logic here
+        // Update portal maps
+        bytes32 worldCoord1 = hashCoords(p1);
+        bytes32 worldCoord2 = hashCoords(p2);
+
+        // Create bidirectional portal
+        portalExists[worldCoord1][worldCoord2] = true;
+        portalExists[worldCoord2][worldCoord1] = true;
     }
 }

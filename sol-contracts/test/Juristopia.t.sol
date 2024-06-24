@@ -114,7 +114,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost}(
             testPoint,
             testName,
-            testDescription
+            testDescription,
+            bytes32(0)
         );
 
         // Check if the world exists at the given coordinates
@@ -143,7 +144,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: secondSpawnCost}(
             testPoint,
             "new name",
-            "new description"
+            "new description",
+            bytes32(0)
         );
     }
 
@@ -166,7 +168,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost}(
             testPoint,
             testName,
-            testDescription
+            testDescription,
+            bytes32(0)
         );
 
         spawnCost = juristopia.spawnCost(
@@ -179,7 +182,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost}(
             testPoint,
             "Another World",
-            "This should fail"
+            "This should fail",
+            bytes32(0)
         );
 
         Point memory testPoint2 = Point({x: 2, y: 2, z: 2});
@@ -192,7 +196,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost2 - 1}(
             testPoint2,
             "Underfunded World",
-            "This should also fail"
+            "This should also fail",
+            bytes32(0)
         );
 
         // Attempt to spawn a world with an empty name
@@ -200,7 +205,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost2}(
             testPoint2,
             "",
-            "This should fail due to empty name"
+            "This should fail due to empty name",
+            bytes32(0)
         );
 
         // Attempt to spawn a world with an empty description
@@ -212,7 +218,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost2}(
             testPoint2,
             "This name is way too long and should cause an error",
-            "Valid description"
+            "Valid description",
+            bytes32(0)
         );
 
         // Attempt to spawn a world on a cube edge
@@ -220,7 +227,8 @@ contract JuristopiaTest is Test {
         juristopia.spawnWorld{value: spawnCost2}(
             Point({x: int128(HALF_SIDE * 2), y: 22, z: 23}),
             "Edge World",
-            "This should fail due to being on a cube edge"
+            "This should fail due to being on a cube edge",
+            bytes32(0)
         );
     }
 }
