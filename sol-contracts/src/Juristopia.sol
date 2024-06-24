@@ -21,6 +21,7 @@ contract Juristopia {
     uint256 public spawnBaseCost;
     SD59x18 public spawnDensityGrowthFactor;
     SD59x18 public spawnDistanceGrowthFactor;
+    uint256 public portalBaseCost;
     SD59x18 public portalDistanceGrowthFactor;
 
     mapping(bytes32 => World) public coordToWorld;
@@ -31,12 +32,14 @@ contract Juristopia {
         uint256 _spawnBaseCost,
         SD59x18 _spawnDensityGrowthFactor,
         SD59x18 _spawnDistanceGrowthFactor,
+        uint256 _portalBaseCost,
         SD59x18 _portalDistanceGrowthFactor
     ) {
         cubeHalfSide = _cubeHalfSide;
         spawnBaseCost = _spawnBaseCost;
         spawnDensityGrowthFactor = _spawnDensityGrowthFactor;
         spawnDistanceGrowthFactor = _spawnDistanceGrowthFactor;
+        portalBaseCost = _portalBaseCost;
         portalDistanceGrowthFactor = _portalDistanceGrowthFactor;
     }
 
@@ -162,6 +165,16 @@ contract Juristopia {
         cubeCoordToDensity[cubeCoord] += 1;
     }
 
+    function createPortalCost(int256 distance) public view returns (uint256) {
+        SD59x18 distanceFactor = convert(distance).mul(
+            portalDistanceGrowthFactor
+        );
+        SD59x18 cost = convert(int256(portalBaseCost)).mul(
+            distanceFactor.exp()
+        );
+        return uint256(convert(cost));
+    }
+
     function createPortal(Point memory p1, Point memory p2) public {
         require(
             bytes(coordToWorld[hashCoords(p1)].name).length > 0,
@@ -171,5 +184,17 @@ contract Juristopia {
             bytes(coordToWorld[hashCoords(p2)].name).length > 0,
             "World2 does not exist"
         );
+
+        int256 distance = pointDistance(p1, p2);
+        uint256 cost = uint256(
+            convert(
+                sd(BASE_COST).mul(
+                    PORTAL_DISTANCE_GROWTH_FACTOR.pow(convert(distance))
+                )
+            )
+        );
+        require(msg.value >= cost, "Not enough ETH to create portal");
+
+        // TODO: Implement portal creation logic here
     }
 }
