@@ -91,6 +91,12 @@ contract Juristopia {
         bytes32 commitmentHash
     );
 
+    event PortalCreated(
+        bytes32 indexed worldCoord1,
+        bytes32 indexed worldCoord2,
+        bytes32 commitmentHash
+    );
+
     modifier onlyGod() {
         require(msg.sender == god, "Only God can perform this action");
         _;
@@ -260,5 +266,7 @@ contract Juristopia {
         // Create bidirectional portal
         portals[worldCoord1][worldCoord2] = commitmentHash;
         portals[worldCoord2][worldCoord1] = commitmentHash;
+
+        emit PortalCreated(worldCoord1, worldCoord2, commitmentHash);
     }
 }

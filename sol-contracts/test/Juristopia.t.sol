@@ -25,6 +25,12 @@ contract JuristopiaTest is Test {
         bytes32 commitmentHash
     );
 
+    event PortalCreated(
+        bytes32 indexed worldCoord1,
+        bytes32 indexed worldCoord2,
+        bytes32 commitmentHash
+    );
+
     function setUp() public {
         juristopia = new Juristopia(
             GOD,
@@ -344,6 +350,12 @@ contract JuristopiaTest is Test {
         );
 
         // Test successful portal creation
+        vm.expectEmit();
+        emit PortalCreated(
+            juristopia.hashCoords(testPoint1),
+            juristopia.hashCoords(testPoint2),
+            commitmentHash
+        );
         vm.prank(GOD);
         juristopia.createPortal{value: portalCost}(
             testPoint1,
