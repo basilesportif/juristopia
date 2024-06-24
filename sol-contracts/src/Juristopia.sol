@@ -44,6 +44,7 @@ struct Portal {
 }
 
 contract Juristopia {
+    address public god;
     int128 public cubeHalfSide;
     uint256 public spawnBaseCost;
     SD59x18 public spawnDensityGrowthFactor;
@@ -56,6 +57,7 @@ contract Juristopia {
     mapping(bytes32 => mapping(bytes32 => bool)) public portalExists;
 
     constructor(
+        address _god,
         int128 _cubeHalfSide,
         uint256 _spawnBaseCost,
         SD59x18 _spawnDensityGrowthFactor,
@@ -63,12 +65,18 @@ contract Juristopia {
         uint256 _portalBaseCost,
         SD59x18 _portalDistanceGrowthFactor
     ) {
+        god = _god;
         cubeHalfSide = _cubeHalfSide;
         spawnBaseCost = _spawnBaseCost;
         spawnDensityGrowthFactor = _spawnDensityGrowthFactor;
         spawnDistanceGrowthFactor = _spawnDistanceGrowthFactor;
         portalBaseCost = _portalBaseCost;
         portalDistanceGrowthFactor = _portalDistanceGrowthFactor;
+    }
+
+    modifier onlyGod() {
+        require(msg.sender == god, "Only God can perform this action");
+        _;
     }
 
     /**
@@ -202,7 +210,10 @@ contract Juristopia {
         return uint256(convert(cost));
     }
 
-    function createPortal(Point memory p1, Point memory p2) public payable {
+    function createPortal(
+        Point memory p1,
+        Point memory p2
+    ) public payable onlyGod {
         require(
             bytes(coordToWorld[hashCoords(p1)].name).length > 0,
             "World1 does not exist"
@@ -215,6 +226,7 @@ contract Juristopia {
             msg.value >= createPortalCost(pointDistance(p1, p2)),
             "Not enough ETH to create portal"
         );
+        // get the commitment hashes
 
         // Update portal maps
         bytes32 worldCoord1 = hashCoords(p1);

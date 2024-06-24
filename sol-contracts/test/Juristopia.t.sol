@@ -9,6 +9,8 @@ import "forge-std/console.sol";
 
 contract JuristopiaTest is Test {
     Juristopia juristopia;
+    address public constant GOD =
+        address(0x1234567890123456789012345678901234567890);
     int128 public constant HALF_SIDE = 5;
     uint256 public constant BASE_COST = 0.1 ether;
     SD59x18 public DENSITY_GROWTH_FACTOR = sd(1.0e18);
@@ -18,6 +20,7 @@ contract JuristopiaTest is Test {
 
     function setUp() public {
         juristopia = new Juristopia(
+            GOD,
             HALF_SIDE,
             BASE_COST,
             DENSITY_GROWTH_FACTOR,
