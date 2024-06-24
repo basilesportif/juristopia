@@ -239,6 +239,7 @@ contract Juristopia {
             bytes(coordToWorld[hashCoords(p2)].name).length > 0,
             "World2 does not exist"
         );
+
         require(
             msg.value >= createPortalCost(pointDistance(p1, p2)),
             "Not enough ETH to create portal"
