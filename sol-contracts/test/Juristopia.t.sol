@@ -262,6 +262,9 @@ contract JuristopiaTest is Test {
         // Spawn two worlds first
         Point memory testPoint1 = Point({x: 5, y: 5, z: 5});
         Point memory testPoint2 = Point({x: 15, y: 15, z: 15});
+        bytes32 commitmentHash = bytes32(
+            0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+        );
 
         uint256 spawnCost1 = juristopia.spawnCost(
             0,
@@ -282,13 +285,13 @@ contract JuristopiaTest is Test {
             testPoint1,
             "World 1",
             "First test world",
-            bytes32(0)
+            commitmentHash
         );
         juristopia.spawnWorld{value: spawnCost2}(
             testPoint2,
             "World 2",
             "Second test world",
-            bytes32(0)
+            commitmentHash
         );
 
         // Calculate portal cost
@@ -297,48 +300,71 @@ contract JuristopiaTest is Test {
         );
 
         // Test creating portal as non-GOD address
-        //vm.expectRevert("Only God can perform this action");
-        //juristopia.createPortal{value: portalCost}(testPoint1, testPoint2);
+        vm.expectRevert("Only God can perform this action");
+        juristopia.createPortal{value: portalCost}(
+            testPoint1,
+            testPoint2,
+            commitmentHash
+        );
 
         // Test creating portal with insufficient ETH
         vm.expectRevert("Not enough ETH to create portal");
         vm.deal(GOD, portalCost);
         vm.prank(GOD);
-        juristopia.createPortal{value: portalCost - 1}(testPoint1, testPoint2);
+        juristopia.createPortal{value: portalCost - 1}(
+            testPoint1,
+            testPoint2,
+            commitmentHash
+        );
 
-        /*      
+        vm.expectRevert("Commitment hash cannot be zero");
+        vm.prank(GOD);
+        juristopia.createPortal{value: portalCost}(
+            testPoint1,
+            testPoint2,
+            bytes32(0)
+        );
+
         // Test creating portal between non-existent worlds
         Point memory nonExistentPoint = Point({x: 25, y: 25, z: 25});
         vm.expectRevert("World1 does not exist");
         vm.prank(GOD);
         juristopia.createPortal{value: portalCost}(
             nonExistentPoint,
-            testPoint2
+            testPoint2,
+            commitmentHash
         );
 
-      
         vm.expectRevert("World2 does not exist");
-        vm.prank(address(this));
+        vm.prank(GOD);
         juristopia.createPortal{value: portalCost}(
             testPoint1,
-            nonExistentPoint
+            nonExistentPoint,
+            commitmentHash
         );
 
         // Test successful portal creation
-        vm.prank(address(GOD));
-        juristopia.createPortal{value: portalCost}(testPoint1, testPoint2);
+        vm.prank(GOD);
+        juristopia.createPortal{value: portalCost}(
+            testPoint1,
+            testPoint2,
+            commitmentHash
+        );
 
         // Verify portal exists
         bytes32 worldCoord1 = juristopia.hashCoords(testPoint1);
         bytes32 worldCoord2 = juristopia.hashCoords(testPoint2);
-        assertTrue(juristopia.portalExists(worldCoord1, worldCoord2));
-        assertTrue(juristopia.portalExists(worldCoord2, worldCoord1));
+        assertEq(juristopia.portals(worldCoord1, worldCoord2), commitmentHash);
+        assertEq(juristopia.portals(worldCoord2, worldCoord1), commitmentHash);
 
         // Test creating portal between already connected worlds
         vm.expectRevert("Portal already exists");
-        vm.prank(address(this));
-        juristopia.createPortal{value: portalCost}(testPoint1, testPoint2);
-
-        */
+        vm.deal(GOD, portalCost);
+        vm.prank(GOD);
+        juristopia.createPortal{value: portalCost}(
+            testPoint1,
+            testPoint2,
+            commitmentHash
+        );
     }
 }

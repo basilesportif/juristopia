@@ -38,11 +38,6 @@ struct Point {
     int128 z;
 }
 
-struct Portal {
-    Point world1;
-    Point world2;
-}
-
 contract Juristopia {
     address public god;
     int128 public cubeHalfSide;
@@ -54,7 +49,13 @@ contract Juristopia {
 
     mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => int32) public cubeCoordToDensity;
-    mapping(bytes32 => mapping(bytes32 => bool)) public portalExists;
+
+    /**
+     * @dev Mapping to store portal connections between worlds
+     * @notice The first two bytes32 keys represent the coordinates of the connected worlds,
+     * while the value (bytes32) represents the commitment hash for the portal
+     */
+    mapping(bytes32 => mapping(bytes32 => bytes32)) public portals;
 
     constructor(
         address _god,
@@ -229,8 +230,10 @@ contract Juristopia {
 
     function createPortal(
         Point memory p1,
-        Point memory p2
+        Point memory p2,
+        bytes32 commitmentHash
     ) public payable onlyGod {
+        require(commitmentHash != bytes32(0), "Commitment hash cannot be zero");
         require(
             bytes(coordToWorld[hashCoords(p1)].name).length > 0,
             "World1 does not exist"
@@ -244,16 +247,18 @@ contract Juristopia {
             msg.value >= createPortalCost(pointDistance(p1, p2)),
             "Not enough ETH to create portal"
         );
-        // get the commitment hashes
 
-        /*
-        // Update portal maps
         bytes32 worldCoord1 = hashCoords(p1);
         bytes32 worldCoord2 = hashCoords(p2);
 
+        // Check if portal already exists
+        require(
+            portals[worldCoord1][worldCoord2] == bytes32(0),
+            "Portal already exists"
+        );
+
         // Create bidirectional portal
-        portalExists[worldCoord1][worldCoord2] = true;
-        portalExists[worldCoord2][worldCoord1] = true;
-        */
+        portals[worldCoord1][worldCoord2] = commitmentHash;
+        portals[worldCoord2][worldCoord1] = commitmentHash;
     }
 }
