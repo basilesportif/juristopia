@@ -120,7 +120,7 @@ contract JuristopiaTest is Test {
 
         // Check if the world exists at the given coordinates
         bytes32 worldCoord = juristopia.hashCoords(testPoint);
-        (string memory name, string memory description, , ) = juristopia
+        (string memory name, string memory description, , , ) = juristopia
             .coordToWorld(worldCoord);
         assertEq(name, testName, "World name does not match");
         assertEq(
@@ -211,7 +211,12 @@ contract JuristopiaTest is Test {
 
         // Attempt to spawn a world with an empty description
         vm.expectRevert("Description cannot be empty");
-        juristopia.spawnWorld{value: spawnCost2}(testPoint2, "Valid Name", "");
+        juristopia.spawnWorld{value: spawnCost2}(
+            testPoint2,
+            "Valid Name",
+            "",
+            bytes32(0)
+        );
 
         // Attempt to spawn a world with a name that's too long
         vm.expectRevert("Name must be 32 characters or less");
