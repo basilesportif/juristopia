@@ -9,8 +9,7 @@ import "forge-std/console.sol";
 
 contract JuristopiaTest is Test {
     Juristopia juristopia;
-    address public constant GOD =
-        address(0x1234567890123456789012345678901234567890);
+    address public constant GOD = address(9);
     int128 public constant HALF_SIDE = 5;
     uint256 public constant BASE_COST = 0.1 ether;
     SD59x18 public DENSITY_GROWTH_FACTOR = sd(1.0e18);
@@ -297,18 +296,16 @@ contract JuristopiaTest is Test {
             juristopia.pointDistance(testPoint1, testPoint2)
         );
 
-        /*
         // Test creating portal as non-GOD address
         vm.expectRevert("Only God can perform this action");
-        vm.prank(address(1)); // Use a non-GOD address
         juristopia.createPortal{value: portalCost}(testPoint1, testPoint2);
 
         // Test creating portal with insufficient ETH
-         vm.expectRevert("Not enough ETH to create portal");
         vm.prank(GOD);
+        vm.expectRevert("Not enough ETH to create portal");
         juristopia.createPortal{value: portalCost - 1}(testPoint1, testPoint2);
 
-      
+        /*      
         // Test creating portal between non-existent worlds
         Point memory nonExistentPoint = Point({x: 25, y: 25, z: 25});
         vm.expectRevert("World1 does not exist");
