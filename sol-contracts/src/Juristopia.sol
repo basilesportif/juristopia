@@ -19,19 +19,22 @@ struct Point {
 contract Juristopia {
     int128 public cubeHalfSide;
     uint256 public spawnBaseCost;
-    SD59x18 public spawnCostGrowthRate;
-    //constant
+    SD59x18 public spawnDensityGrowthFactor;
+    SD59x18 public spawnDistanceGrowthFactor;
+
     mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => int32) public cubeCoordToDensity;
 
     constructor(
         int128 _cubeHalfSide,
         uint256 _spawnBaseCost,
-        SD59x18 _spawnCostGrowthRate
+        SD59x18 _spawnDensityGrowthFactor,
+        SD59x18 _spawnDistanceGrowthFactor
     ) {
         cubeHalfSide = _cubeHalfSide;
         spawnBaseCost = _spawnBaseCost;
-        spawnCostGrowthRate = _spawnCostGrowthRate;
+        spawnDensityGrowthFactor = _spawnDensityGrowthFactor;
+        spawnDistanceGrowthFactor = _spawnDistanceGrowthFactor;
     }
 
     function hashCoords(Point memory p) public pure returns (bytes32) {
@@ -71,15 +74,15 @@ contract Juristopia {
     // need 3D distance from the cube center to the point
     // cost increases exponentially with distance
     function spawnCost(
-        int256 _distanceFromCenter,
-        int32 _density
+        int32 _density,
+        int256 _distanceFromCenter
     ) public view returns (uint256) {
         SD59x18 density = convert(int256(_density));
         SD59x18 distance = convert(int256(_distanceFromCenter));
-        SD59x18 distanceAndDensity = distance.add(density);
-        SD59x18 cost = convert(int256(spawnBaseCost)).mul(
-            distanceAndDensity.mul(spawnCostGrowthRate).exp()
-        );
+        SD59x18 densityFactor = density.mul(spawnDensityGrowthFactor);
+        SD59x18 distanceFactor = distance.mul(spawnDistanceGrowthFactor);
+        SD59x18 eToTheRT = (distanceFactor.add(densityFactor)).exp();
+        SD59x18 cost = convert(int256(spawnBaseCost)).mul(eToTheRT);
         return uint256(convert(cost));
     }
 
@@ -99,7 +102,7 @@ contract Juristopia {
         bytes32 worldCoord = hashCoords(p);
         bytes32 cubeCoord = hashCoords(cc);
         int32 density = cubeCoordToDensity[cubeCoord];
-        uint256 cost = spawnCost(pointDistance(p, cc), density);
+        uint256 cost = spawnCost(density, pointDistance(p, cc));
 
         require(msg.value >= cost, "Not enough ETH to spawn this world");
         require(

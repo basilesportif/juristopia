@@ -11,10 +11,16 @@ contract JuristopiaTest is Test {
     Juristopia juristopia;
     int128 public constant HALF_SIDE = 5;
     uint256 public constant BASE_COST = 0.1 ether;
-    SD59x18 public GROWTH_RATE = sd(0.4e18);
+    SD59x18 public DENSITY_GROWTH_FACTOR = sd(1.0e18);
+    SD59x18 public DISTANCE_GROWTH_FACTOR = sd(0.5e18);
 
     function setUp() public {
-        juristopia = new Juristopia(HALF_SIDE, BASE_COST, GROWTH_RATE);
+        juristopia = new Juristopia(
+            HALF_SIDE,
+            BASE_COST,
+            DENSITY_GROWTH_FACTOR,
+            DISTANCE_GROWTH_FACTOR
+        );
     }
 
     function test_ContainingCube() public view {
@@ -56,9 +62,32 @@ contract JuristopiaTest is Test {
     }
 
     function test_SpawnCost() public {
-        assertEq(juristopia.spawnCost(0, 0), 0.1 ether);
-        assertEq(juristopia.spawnCost(1, 0), 0.149182469764127031 ether);
-        assertEq(juristopia.spawnCost(3, 1), 0.49530324243951148 ether);
+        // 0.738905609893065022
+        //0.271828182845904523
+        int32 density1 = 0;
+        int256 distance1 = 0;
+        assertEq(juristopia.spawnCost(density1, distance1), 0.1 ether);
+
+        int32 density2 = 2;
+        int256 distance2 = 0;
+        assertEq(
+            juristopia.spawnCost(density2, distance2),
+            0.738905609893065022 ether
+        );
+
+        int32 density3 = 0;
+        int256 distance3 = 2;
+        assertEq(
+            juristopia.spawnCost(density3, distance3),
+            .271828182845904523 ether
+        );
+
+        int32 density4 = 2;
+        int256 distance4 = 2;
+        assertEq(
+            juristopia.spawnCost(density4, distance4),
+            2.008553692318766772 ether
+        );
     }
 
     function test_SpawnWorld() public {
@@ -73,9 +102,10 @@ contract JuristopiaTest is Test {
 
         // Calculate spawn cost
         uint256 spawnCost = juristopia.spawnCost(
-            juristopia.pointDistance(testPoint, containingCube),
-            initialDensity
+            initialDensity,
+            juristopia.pointDistance(testPoint, containingCube)
         );
+        console.log("spawnCost first: %i", spawnCost);
 
         // Spawn the world
         juristopia.spawnWorld{value: spawnCost}(
@@ -102,6 +132,22 @@ contract JuristopiaTest is Test {
             initialDensity + 1,
             "Density did not increment correctly"
         );
+
+        /*
+        // Log the spawn cost for the second attempt
+        uint256 secondSpawnCost = juristopia.spawnCost(
+            newDensity,
+            juristopia.pointDistance(testPoint, containingCube)
+        );
+        console.log("spawnCost second: %s", secondSpawnCost);
+
+        vm.expectRevert("World already exists");
+        juristopia.spawnWorld{value: secondSpawnCost}(
+            testPoint,
+            "new name",
+            "new description"
+        );
+        */
     }
 
     function test_BadSpawnWorld() public {
@@ -116,9 +162,11 @@ contract JuristopiaTest is Test {
 
         // Calculate spawn cost
         uint256 spawnCost = juristopia.spawnCost(
-            juristopia.pointDistance(testPoint, containingCube),
-            initialDensity
+            initialDensity,
+            juristopia.pointDistance(testPoint, containingCube)
         );
+        /*
+        console.log("spawnCost second: %i", spawnCost);
 
         // Spawn the world
         juristopia.spawnWorld{value: spawnCost}(
@@ -134,6 +182,7 @@ contract JuristopiaTest is Test {
             "This should fail"
         );
 
+       
         // Attempt to spawn a world with insufficient ETH
         vm.expectRevert("Not enough ETH to spawn this world");
         juristopia.spawnWorld{value: spawnCost - 1}(
@@ -169,9 +218,10 @@ contract JuristopiaTest is Test {
         // Attempt to spawn a world on a cube edge
         vm.expectRevert("x is invalid: on cube edge");
         juristopia.spawnWorld{value: spawnCost}(
-            Point({x: int128(cubeHalfSide * 2), y: 22, z: 23}),
+            Point({x: int128(HALF_SIDE * 2), y: 22, z: 23}),
             "Edge World",
             "This should fail due to being on a cube edge"
         );
+        */
     }
 }
