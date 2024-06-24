@@ -21,6 +21,7 @@ contract Juristopia {
     uint256 public spawnBaseCost;
     SD59x18 public spawnDensityGrowthFactor;
     SD59x18 public spawnDistanceGrowthFactor;
+    SD59x18 public portalDistanceGrowthFactor;
 
     mapping(bytes32 => World) public coordToWorld;
     mapping(bytes32 => int32) public cubeCoordToDensity;
@@ -29,19 +30,34 @@ contract Juristopia {
         int128 _cubeHalfSide,
         uint256 _spawnBaseCost,
         SD59x18 _spawnDensityGrowthFactor,
-        SD59x18 _spawnDistanceGrowthFactor
+        SD59x18 _spawnDistanceGrowthFactor,
+        SD59x18 _portalDistanceGrowthFactor
     ) {
         cubeHalfSide = _cubeHalfSide;
         spawnBaseCost = _spawnBaseCost;
         spawnDensityGrowthFactor = _spawnDensityGrowthFactor;
         spawnDistanceGrowthFactor = _spawnDistanceGrowthFactor;
+        portalDistanceGrowthFactor = _portalDistanceGrowthFactor;
     }
 
+    /**
+     * @notice Hashes the coordinates of a given point in 3D space
+     * @dev Uses keccak256 to hash the packed encoding of the x, y, and z coordinates
+     * @param p The Point struct containing the coordinates to be hashed
+     * @return bytes32 The resulting hash of the coordinates
+     */
     function hashCoords(Point memory p) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(p.x, p.y, p.z));
     }
 
-    /** @return the rounded 3D distance between two points */
+    /**
+     * @notice Calculates the rounded 3D Euclidean distance between two points
+     * @dev This function uses the Pythagorean theorem in 3D space to calculate the distance.
+     * The result is rounded to the nearest integer.
+     * @param p1 The first point in 3D space
+     * @param p2 The second point in 3D space
+     * @return The rounded integer distance between the two points
+     */
     function pointDistance(
         Point memory p1,
         Point memory p2
@@ -55,6 +71,13 @@ contract Juristopia {
         return convert(convert(squareSum).sqrt());
     }
 
+    /**
+     * @notice Calculates the center coordinates of the cube containing the given point
+     * @dev This function determines the cube in which a given point resides and returns its center coordinates.
+     * The universe is divided into cubes with side length equal to 2 * cubeHalfSide.
+     * @param p The input point for which to find the containing cube
+     * @return Point The center coordinates of the containing cube
+     */
     function containingCube(Point memory p) public view returns (Point memory) {
         int128 side = cubeHalfSide * 2;
         int128 absX = p.x >= 0 ? p.x : -p.x;
@@ -70,9 +93,14 @@ contract Juristopia {
                 z: p.z >= 0 ? absZ : -absZ
             });
     }
-
-    // need 3D distance from the cube center to the point
-    // cost increases exponentially with distance
+    /**
+     * @notice Calculates the cost to spawn a new world
+     * @dev The cost is calculated based on the density of the containing cube and the distance from its center.
+     * The formula used is: cost = spawnBaseCost * e^(density * spawnDensityGrowthFactor + distance * spawnDistanceGrowthFactor)
+     * @param _density The current density of the containing cube
+     * @param _distanceFromCenter The distance from the center of the containing cube to the spawn point
+     * @return The cost in wei to spawn a new world
+     */
     function spawnCost(
         int32 _density,
         int256 _distanceFromCenter
@@ -85,7 +113,22 @@ contract Juristopia {
         SD59x18 cost = convert(int256(spawnBaseCost)).mul(eToTheRT);
         return uint256(convert(cost));
     }
-
+    /**
+     * @notice Spawns a new world at the given coordinates
+     * @dev This function creates a new world in the Juristopia universe. It requires payment in ETH,
+     * with the cost calculated based on the density of the containing cube and the distance from its center.
+     * @param p The 3D coordinates where the world will be spawned
+     * @param name The name of the new world (must be non-empty and 32 characters or less)
+     * @param description A description of the new world (must be non-empty)
+     * @custom:throws "Name cannot be empty" if the name is empty
+     * @custom:throws "Description cannot be empty" if the description is empty
+     * @custom:throws "Name must be 32 characters or less" if the name exceeds 32 characters
+     * @custom:throws "x is invalid: on cube edge" if the x coordinate is on a cube edge
+     * @custom:throws "y is invalid: on cube edge" if the y coordinate is on a cube edge
+     * @custom:throws "z is invalid: on cube edge" if the z coordinate is on a cube edge
+     * @custom:throws "Not enough ETH to spawn this world" if the sent ETH is less than the required cost
+     * @custom:throws "World already exists" if a world already exists at the given coordinates
+     */
     function spawnWorld(
         Point memory p,
         string memory name,
@@ -117,5 +160,16 @@ contract Juristopia {
             containingCube: cc
         });
         cubeCoordToDensity[cubeCoord] += 1;
+    }
+
+    function createPortal(Point memory p1, Point memory p2) public {
+        require(
+            bytes(coordToWorld[hashCoords(p1)].name).length > 0,
+            "World1 does not exist"
+        );
+        require(
+            bytes(coordToWorld[hashCoords(p2)].name).length > 0,
+            "World2 does not exist"
+        );
     }
 }

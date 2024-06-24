@@ -13,13 +13,15 @@ contract JuristopiaTest is Test {
     uint256 public constant BASE_COST = 0.1 ether;
     SD59x18 public DENSITY_GROWTH_FACTOR = sd(1.0e18);
     SD59x18 public DISTANCE_GROWTH_FACTOR = sd(0.5e18);
+    SD59x18 public PORTAL_DISTANCE_GROWTH_FACTOR = sd(0.1e18);
 
     function setUp() public {
         juristopia = new Juristopia(
             HALF_SIDE,
             BASE_COST,
             DENSITY_GROWTH_FACTOR,
-            DISTANCE_GROWTH_FACTOR
+            DISTANCE_GROWTH_FACTOR,
+            PORTAL_DISTANCE_GROWTH_FACTOR
         );
     }
 
