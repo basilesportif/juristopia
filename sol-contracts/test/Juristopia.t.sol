@@ -133,12 +133,9 @@ contract JuristopiaTest is Test {
             "Density did not increment correctly"
         );
 
-        /*
         // Log the spawn cost for the second attempt
-        uint256 secondSpawnCost = juristopia.spawnCost(
-            newDensity,
-            juristopia.pointDistance(testPoint, containingCube)
-        );
+        int256 distance = juristopia.pointDistance(testPoint, containingCube);
+        uint256 secondSpawnCost = juristopia.spawnCost(newDensity, distance);
         console.log("spawnCost second: %s", secondSpawnCost);
 
         vm.expectRevert("World already exists");
@@ -147,7 +144,6 @@ contract JuristopiaTest is Test {
             "new name",
             "new description"
         );
-        */
     }
 
     function test_BadSpawnWorld() public {
