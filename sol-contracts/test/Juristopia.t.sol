@@ -18,6 +18,14 @@ contract JuristopiaTest is Test {
     uint256 public PORTAL_BASE_COST = 0.1 ether;
     SD59x18 public PORTAL_DISTANCE_GROWTH_FACTOR = sd(0.1e18);
 
+    event WorldSpawned(
+        bytes32 indexed worldCoord,
+        string name,
+        Point location,
+        Point containingCube,
+        bytes32 commitmentHash
+    );
+
     function setUp() public {
         juristopia = new Juristopia(
             GOD,
@@ -115,8 +123,8 @@ contract JuristopiaTest is Test {
         );
 
         // TODO: this fails
-        vm.expectEmit(true, true, false, true);
-        emit Juristopia.WorldSpawned(
+        vm.expectEmit();
+        emit WorldSpawned(
             juristopia.hashCoords(testPoint),
             testName,
             testPoint,
