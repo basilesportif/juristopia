@@ -8,7 +8,7 @@ export function UniverseScene() {
   const { cubes, halfSideLength } = useStore();
 
   return (
-    <Canvas camera={{ position: [60, 60, 10] }}>
+    <Canvas camera={{ position: [70, 60, 30] }}>
       <color attach="background" args={['#f0f0e8']} />
       <ambientLight intensity={0.2} />
       <pointLight position={[10, 10, 10]} intensity={0.8} />

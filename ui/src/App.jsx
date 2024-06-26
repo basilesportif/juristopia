@@ -4,8 +4,9 @@ import { UniverseScene } from './UniverseScene'
 import cubesFixture from './fixtures/cubesFixture.json'
 
 function App() {
-  const { cubes, setCubesData } = useStore()
+  const { setCubesData } = useStore()
 
+  // load cubes. Can do this via API later
   useEffect(() => {
     setCubesData(cubesFixture);
   }, []);

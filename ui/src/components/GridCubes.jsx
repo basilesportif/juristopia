@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import { Box, Text } from '@react-three/drei';
+import { Box, Text, Line } from '@react-three/drei';
 import * as THREE from 'three';
 
 function DashedLine({ points, ...props }) {
@@ -18,17 +18,40 @@ function DashedLine({ points, ...props }) {
   );
 }
 
-function CoordinateLabel({ position, text }) {
+function AxisLines({ axisLength, gridSize, cubeSize }) {
+  const color = "green";
+  const labelOffset = (gridSize + 2) * cubeSize; // Position labels slightly beyond the axis lines
+  const labelSize = 3;
+  const labelPositionOffset = 3;
+
   return (
-    <Text
-      position={position}
-      fontSize={0.5}
-      color="#666666"
-      anchorX="center"
-      anchorY="middle"
-    >
-      {text}
-    </Text>
+    <>
+      <Line
+        points={[[-axisLength, 0, 0], [axisLength, 0, 0]]}
+        color={color}
+        lineWidth={2}
+      />
+      <Line
+        points={[[0, -axisLength, 0], [0, axisLength, 0]]}
+        color={color}
+        lineWidth={2}
+      />
+      <Line
+        points={[[0, 0, -axisLength], [0, 0, axisLength]]}
+        color={color}
+        lineWidth={2}
+      />
+
+      <Text position={[labelOffset, labelPositionOffset, labelPositionOffset]} color={color} fontSize={labelSize}>
+        X
+      </Text>
+      <Text position={[labelPositionOffset, labelOffset, labelPositionOffset]} color={color} fontSize={labelSize}>
+        Y
+      </Text>
+      <Text position={[labelPositionOffset, labelPositionOffset, labelOffset]} color={color} fontSize={labelSize}>
+        Z
+      </Text>
+    </>
   );
 }
 
@@ -122,14 +145,9 @@ const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
 
   return (
     <>
-      <Box
-        position={[0, 0, 0]}
-        args={[1, 1, 1]}
-      >
-        <meshStandardMaterial color="#ff0000" transparent opacity={0.8} />
-      </Box>
       {cubes}
       <GridLines gridSize={gridSize} cubeSize={cubeSize} />
+      <AxisLines axisLength={(gridSize + 10) * cubeSize} gridSize={gridSize} cubeSize={cubeSize} />
     </>
   );
 };
