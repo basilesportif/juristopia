@@ -43,13 +43,13 @@ function AxisLines({ axisLength, gridSize, cubeSize }) {
         lineWidth={2}
       />
 
-      <Text position={[labelOffset, labelPositionOffset, labelPositionOffset]} color={color} fontSize={labelSize}>
+      <Text position={[labelOffset, labelPositionOffset, labelPositionOffset]} color={color} fontSize={labelSize} rotation={[0, Math.PI / 2, 0]}>
         X
       </Text>
-      <Text position={[labelPositionOffset, labelOffset, labelPositionOffset]} color={color} fontSize={labelSize}>
+      <Text position={[labelPositionOffset, labelOffset, labelPositionOffset]} color={color} fontSize={labelSize} rotation={[0, Math.PI / 2, 0]}>
         Y
       </Text>
-      <Text position={[labelPositionOffset, labelPositionOffset, labelOffset]} color={color} fontSize={labelSize}>
+      <Text position={[labelPositionOffset, labelPositionOffset, labelOffset]} color={color} fontSize={labelSize} rotation={[0, Math.PI / 2, 0]}>
         Z
       </Text>
     </>
