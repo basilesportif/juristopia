@@ -17,6 +17,9 @@ function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '1200px', height: '600px', marginTop: '20px' }}>
+        <UniverseScene />
+      </div>
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <h2>Universe Statistics</h2>
         <p>Number of Worlds: {worlds.length}</p>
@@ -35,10 +38,6 @@ function App() {
           ))}
         </ul>
       </div>
-      <div style={{ width: '1200px', height: '600px', marginTop: '20px' }}>
-        <UniverseScene />
-      </div>
-
     </div>
   )
 }
