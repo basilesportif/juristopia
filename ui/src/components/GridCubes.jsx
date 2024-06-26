@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import { Box, Text, Line } from '@react-three/drei';
+import { Box, Text, Line, Html } from '@react-three/drei';
 import { useStore } from '../store';
 import * as THREE from 'three';
+import { useState } from 'react';
 
 function DashedLine({ points, ...props }) {
   const ref = useRef();
@@ -114,11 +115,51 @@ function GridLines({ gridSize, cubeSize }) {
   return <group>{gridElements}</group>;
 }
 
+const WorldSpheres = () => {
+  const { worlds } = useStore();
+  const [selectedWorld, setSelectedWorld] = useState(null);
+
+  const spheres = useMemo(() => {
+    return worlds.map((world, index) => (
+      <mesh
+        key={index}
+        position={[world.x, world.y, world.z]}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedWorld(selectedWorld === world ? null : world);
+        }}
+      >
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshBasicMaterial color="yellow" />
+        {selectedWorld === world && (
+          <Html>
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              padding: '10px',
+              borderRadius: '5px',
+              width: '200px'
+            }}>
+              <h3>{world.name}</h3>
+              <p>{world.description}</p>
+              <p>Commitment Hash: {world.commitmentHash.slice(0, 10)}...</p>
+              <p>Containing Cube: ({world.containingCube.x}, {world.containingCube.y}, {world.containingCube.z})</p>
+            </div>
+          </Html>
+        )}
+      </mesh>
+    ));
+  }, [worlds, selectedWorld]);
+
+  return <group>{spheres}</group>;
+};
+
 const GridCubes = ({ gridSize, cubeSize, opacity }) => {
   const { containingCubes } = useStore();
   const colors = ['#ff69b4', '#00ced1']; // Pink and turquoise
 
   const cubes = [];
+  const populatedCubes = [];
   for (let x = -gridSize; x < gridSize; x++) {
     for (let y = -gridSize; y < gridSize; y++) {
       for (let z = -gridSize; z < gridSize; z++) {
@@ -128,6 +169,10 @@ const GridCubes = ({ gridSize, cubeSize, opacity }) => {
           z * cubeSize + cubeSize / 2,
         ];
         const colorIndex = (Math.abs(x) + Math.abs(y) + Math.abs(z)) % 2;
+        const cubeKey = `${x};${y};${z}`;
+        const isContainingCube = containingCubes.hasOwnProperty(cubeKey);
+        const cubeOpacity = isContainingCube ? 0.0 : opacity; // Higher opacity for containing cubes
+
         cubes.push(
           <Box
             key={`${x};${y};${z}`}
@@ -137,7 +182,7 @@ const GridCubes = ({ gridSize, cubeSize, opacity }) => {
             <meshStandardMaterial
               color={colors[colorIndex]}
               transparent
-              opacity={opacity}
+              opacity={cubeOpacity}
             />
           </Box>
         );
@@ -150,6 +195,7 @@ const GridCubes = ({ gridSize, cubeSize, opacity }) => {
       {cubes}
       {<GridLines gridSize={gridSize} cubeSize={cubeSize} />}
       <AxisLines axisLength={(gridSize + 10) * cubeSize} gridSize={gridSize} cubeSize={cubeSize} />
+      <WorldSpheres />
     </>
   );
 };

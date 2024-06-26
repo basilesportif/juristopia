@@ -12,7 +12,7 @@ export function UniverseScene() {
       <color attach="background" args={['#f0f0e8']} />
       <ambientLight intensity={0.2} />
       <pointLight position={[10, 10, 10]} intensity={0.8} />
-      <GridCubes gridSize={3} cubeSize={halfSideLength * 2} opacity={0.2} />
+      <GridCubes gridSize={3} cubeSize={halfSideLength * 2} opacity={0.11} />
       <OrbitControls makeDefault />
     </Canvas>
   )
