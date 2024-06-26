@@ -33,18 +33,11 @@ function CoordinateLabel({ position, text }) {
   )
 }
 
-export function GridLines() {
-  const points = useStore((state) => state.points)
-
+export function GridLines({ gridSize = 5, cubeSize = 10 }) {
   const gridElements = useMemo(() => {
     const elements = []
-    const padding = 50
-    const maxX = Math.max(...points.map(p => p.position[0])) + padding
-    const maxY = Math.max(...points.map(p => p.position[1])) + padding
-    const maxZ = Math.max(...points.map(p => p.position[2])) + padding
-    const minX = Math.min(...points.map(p => p.position[0])) - padding
-    const minY = Math.min(...points.map(p => p.position[1])) - padding
-    const minZ = Math.min(...points.map(p => p.position[2])) - padding
+    const maxCoord = gridSize * cubeSize
+    const minCoord = -maxCoord
 
     const lineMaterial = (
       <lineDashedMaterial
@@ -58,52 +51,49 @@ export function GridLines() {
     )
 
     // Create grid lines for XY plane
-    for (let x = Math.floor(minX / 10) * 10; x <= maxX; x += 10) {
-      for (let y = Math.floor(minY / 10) * 10; y <= maxY; y += 10) {
+    for (let x = minCoord; x <= maxCoord; x += cubeSize) {
+      for (let y = minCoord; y <= maxCoord; y += cubeSize) {
         elements.push(
           <DashedLine
             key={`xy${x}${y}`}
-            points={[new THREE.Vector3(x, y, minZ), new THREE.Vector3(x, y, maxZ)]}
+            points={[new THREE.Vector3(x, y, minCoord), new THREE.Vector3(x, y, maxCoord)]}
           >
             {lineMaterial}
           </DashedLine>
         )
-        // Coordinate label removed
       }
     }
 
     // Create grid lines for XZ plane
-    for (let x = Math.floor(minX / 10) * 10; x <= maxX; x += 10) {
-      for (let z = Math.floor(minZ / 10) * 10; z <= maxZ; z += 10) {
+    for (let x = minCoord; x <= maxCoord; x += cubeSize) {
+      for (let z = minCoord; z <= maxCoord; z += cubeSize) {
         elements.push(
           <DashedLine
             key={`xz${x}${z}`}
-            points={[new THREE.Vector3(x, minY, z), new THREE.Vector3(x, maxY, z)]}
+            points={[new THREE.Vector3(x, minCoord, z), new THREE.Vector3(x, maxCoord, z)]}
           >
             {lineMaterial}
           </DashedLine>
         )
-        // Coordinate label removed
       }
     }
 
     // Create grid lines for YZ plane
-    for (let y = Math.floor(minY / 10) * 10; y <= maxY; y += 10) {
-      for (let z = Math.floor(minZ / 10) * 10; z <= maxZ; z += 10) {
+    for (let y = minCoord; y <= maxCoord; y += cubeSize) {
+      for (let z = minCoord; z <= maxCoord; z += cubeSize) {
         elements.push(
           <DashedLine
             key={`yz${y}${z}`}
-            points={[new THREE.Vector3(minX, y, z), new THREE.Vector3(maxX, y, z)]}
+            points={[new THREE.Vector3(minCoord, y, z), new THREE.Vector3(maxCoord, y, z)]}
           >
             {lineMaterial}
           </DashedLine>
         )
-        // Coordinate label removed
       }
     }
 
     return elements
-  }, [points])
+  }, [gridSize, cubeSize])
 
   return <group>{gridElements}</group>
 }
