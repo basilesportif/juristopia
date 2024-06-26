@@ -1,20 +1,23 @@
 import { create } from 'zustand'
 
-const createPoints = (count) => {
-  return Array.from({ length: count }, () => ({
-    position: [
-      Math.random() * 10 - 5,
-      Math.random() * 10 - 5,
-      Math.random() * 10 - 5
-    ],
-    active: false
-  }))
+const INITIAL_POINT_COUNT = 100
+const POINT_RANGE = 5
+
+const createPoint = () => ({
+  position: Array.from({ length: 3 }, () => Math.random() * 2 * POINT_RANGE - POINT_RANGE),
+  active: false
+})
+
+const createPoints = (count) => Array.from({ length: count }, createPoint)
+
+const initialState = {
+  pointScale: 0.1,
+  points: createPoints(INITIAL_POINT_COUNT),
 }
 
 export const useStore = create((set) => ({
-  pointScale: 0.1,
+  ...initialState,
   setPointScale: (scale) => set({ pointScale: scale }),
-  points: createPoints(100),  // Create 100 random points
   togglePoint: (index) => set((state) => ({
     points: state.points.map((point, i) =>
       i === index ? { ...point, active: !point.active } : point

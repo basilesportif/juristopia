@@ -21,8 +21,8 @@ function App() {
         />
         <span>{pointScale.toFixed(2)}</span>
       </div>
-      <div style={{ width: '800px', height: '600px', marginTop: '20px' }}>
-        <ThreeScene />
+      <div style={{ width: '1200px', height: '600px', marginTop: '20px' }}>
+        <UniverseScene />
       </div>
       <div style={{ marginTop: '20px' }}>
         <h2>Toggle Points</h2>
