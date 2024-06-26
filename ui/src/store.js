@@ -13,6 +13,8 @@ const createPoints = (count) => Array.from({ length: count }, createPoint)
 const initialState = {
   pointScale: 0.1,
   points: createPoints(INITIAL_POINT_COUNT),
+  cubes: [],
+  halfSideLength: 0,
 }
 
 export const useStore = create((set) => ({
@@ -23,4 +25,9 @@ export const useStore = create((set) => ({
       i === index ? { ...point, active: !point.active } : point
     )
   })),
+  // New action to set cubes data
+  setCubesData: (cubesData) => set({
+    cubes: cubesData.cubes,
+    halfSideLength: cubesData.halfSideLength,
+  }),
 }))

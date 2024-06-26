@@ -35,7 +35,7 @@ function CoordinateLabel({ position, text }) {
 function GridLines({ gridSize, cubeSize }) {
   const gridElements = useMemo(() => {
     const elements = [];
-    const maxCoord = gridSize * cubeSize;
+    const maxCoord = (gridSize + 1) * cubeSize;
     const minCoord = -maxCoord;
 
     const lineMaterial = (
@@ -49,46 +49,39 @@ function GridLines({ gridSize, cubeSize }) {
       />
     );
 
-    // Create grid lines for XY, XZ, and YZ planes
-    for (let i = minCoord; i <= maxCoord; i += cubeSize) {
-      elements.push(
-        <DashedLine
-          key={`xy${i}`}
-          points={[new THREE.Vector3(i, minCoord, 0), new THREE.Vector3(i, maxCoord, 0)]}
-        >
-          {lineMaterial}
-        </DashedLine>,
-        <DashedLine
-          key={`yx${i}`}
-          points={[new THREE.Vector3(minCoord, i, 0), new THREE.Vector3(maxCoord, i, 0)]}
-        >
-          {lineMaterial}
-        </DashedLine>,
-        <DashedLine
-          key={`xz${i}`}
-          points={[new THREE.Vector3(i, 0, minCoord), new THREE.Vector3(i, 0, maxCoord)]}
-        >
-          {lineMaterial}
-        </DashedLine>,
-        <DashedLine
-          key={`zx${i}`}
-          points={[new THREE.Vector3(minCoord, 0, i), new THREE.Vector3(maxCoord, 0, i)]}
-        >
-          {lineMaterial}
-        </DashedLine>,
-        <DashedLine
-          key={`yz${i}`}
-          points={[new THREE.Vector3(0, i, minCoord), new THREE.Vector3(0, i, maxCoord)]}
-        >
-          {lineMaterial}
-        </DashedLine>,
-        <DashedLine
-          key={`zy${i}`}
-          points={[new THREE.Vector3(0, minCoord, i), new THREE.Vector3(0, maxCoord, i)]}
-        >
-          {lineMaterial}
-        </DashedLine>
-      );
+    // Create grid lines for all cube edges
+    for (let x = minCoord; x <= maxCoord; x += cubeSize) {
+      for (let y = minCoord; y <= maxCoord; y += cubeSize) {
+        for (let z = minCoord; z <= maxCoord; z += cubeSize) {
+          // X-axis lines
+          elements.push(
+            <DashedLine
+              key={`x${x}${y}${z}`}
+              points={[new THREE.Vector3(minCoord, y, z), new THREE.Vector3(maxCoord, y, z)]}
+            >
+              {lineMaterial}
+            </DashedLine>
+          );
+          // Y-axis lines
+          elements.push(
+            <DashedLine
+              key={`y${x}${y}${z}`}
+              points={[new THREE.Vector3(x, minCoord, z), new THREE.Vector3(x, maxCoord, z)]}
+            >
+              {lineMaterial}
+            </DashedLine>
+          );
+          // Z-axis lines
+          elements.push(
+            <DashedLine
+              key={`z${x}${y}${z}`}
+              points={[new THREE.Vector3(x, y, minCoord), new THREE.Vector3(x, y, maxCoord)]}
+            >
+              {lineMaterial}
+            </DashedLine>
+          );
+        }
+      }
     }
 
     return elements;
