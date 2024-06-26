@@ -1,0 +1,64 @@
+{
+  "halfSideLength": 5,
+  "cubes": [
+    {
+      "center": {
+        "x": 5,
+        "y": 5,
+        "z": 5
+      },
+      "worlds": [
+        {
+          "x": 4,
+          "y": 4,
+          "z": 4,
+          "name": "Timtime World",
+          "description": "A place of freedom",
+          "commitmentHash": "0x18ee24150dcb1d96752a4d6dd0f20dfd8ba8c38527e40aa8509b7adecf78f9c6"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "z": 2,
+          "name": "Quantum Realm",
+          "description": "A microscopic universe of infinite possibilities",
+          "commitmentHash": "0x3a7c8f9d2e1b0c4f6d5e8a2b1c0d9f8e7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1"
+        }
+      ]
+    },
+    {
+      "center": {
+        "x": 15,
+        "y": 15,
+        "z": 15
+      },
+      "worlds": [
+        {
+          "x": 14,
+          "y": 14,
+          "z": 14,
+          "name": "Celestial Haven",
+          "description": "A serene sanctuary among the stars",
+          "commitmentHash": "0x5f2a1b3c4d6e8f9a0b7c5d3e1f8a9c7b5d3e1f9a8c6b4d2e0f7a9c5b3d1e7f9a"
+        }
+      ]
+    },
+    {
+      "center": {
+        "x": 15,
+        "y": 5,
+        "z": 5
+      },
+      "worlds": [
+        {
+          "x": 15,
+          "y": 4,
+          "z": 4,
+          "name": "Ethereal Realm",
+          "description": "A realm of pure ether",
+          "commitmentHash": "0x5f2a1b3c4d6e8f9a0b7c5d3e1f8a9c7b5d3e1f9a8c6b4d2e0f7a9c5b3d1e7f9a"
+        }
+      ]
+    }
+  ]
+}
