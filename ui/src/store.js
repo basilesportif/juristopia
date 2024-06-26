@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 function hashCoords({ x, y, z }) {
-  return `${x},${y},${z}`;
+  return `${x};${y};${z}`;
 }
 
 // Factored out addWorld function

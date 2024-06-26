@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Box, Text, Line } from '@react-three/drei';
+import { useStore } from '../store';
 import * as THREE from 'three';
 
 function DashedLine({ points, ...props }) {
@@ -65,7 +66,7 @@ function GridLines({ gridSize, cubeSize }) {
       <lineDashedMaterial
         attach="material"
         color="#444444"
-        opacity={0.7}
+        opacity={0.9}
         transparent={false}
         dashSize={1}
         gapSize={1}
@@ -114,12 +115,13 @@ function GridLines({ gridSize, cubeSize }) {
 }
 
 const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
+  const { containingCubes } = useStore();
   const colors = ['#ff69b4', '#00ced1']; // Pink and turquoise
 
   const cubes = [];
-  for (let x = -gridSize; x <= gridSize; x++) {
-    for (let y = -gridSize; y <= gridSize; y++) {
-      for (let z = -gridSize; z <= gridSize; z++) {
+  for (let x = (-gridSize + 1); x < gridSize; x++) {
+    for (let y = (-gridSize + 1); y < gridSize; y++) {
+      for (let z = (-gridSize + 1); z < gridSize; z++) {
         const position = [
           x * cubeSize,
           y * cubeSize,
@@ -128,7 +130,7 @@ const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
         const colorIndex = (Math.abs(x) + Math.abs(y) + Math.abs(z)) % 2;
         cubes.push(
           <Box
-            key={`${x}-${y}-${z}`}
+            key={`${x};${y};${z}`}
             position={position}
             args={[cubeSize, cubeSize, cubeSize]}
           >
@@ -146,7 +148,7 @@ const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
   return (
     <>
       {cubes}
-      <GridLines gridSize={gridSize} cubeSize={cubeSize} />
+      {/* <GridLines gridSize={gridSize} cubeSize={cubeSize} /> */}
       <AxisLines axisLength={(gridSize + 10) * cubeSize} gridSize={gridSize} cubeSize={cubeSize} />
     </>
   );
