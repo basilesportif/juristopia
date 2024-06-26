@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei'
 import GridCubes from './components/GridCubes';
 
 export function UniverseScene() {
-  const { cubes, halfSideLength } = useStore();
+  const { halfSideLength } = useStore();
 
   return (
     <Canvas camera={{ position: [70, 60, 30] }}>
