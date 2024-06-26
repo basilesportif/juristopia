@@ -12,7 +12,6 @@ export function UniverseScene() {
       <ambientLight intensity={0.2} />
       <pointLight position={[10, 10, 10]} intensity={0.8} />
       <GridCubes gridSize={3} cubeSize={10} opacity={0.12} />
-      <GridLines gridSize={3} cubeSize={10} />
       <OrbitControls makeDefault />
     </Canvas>
   )
