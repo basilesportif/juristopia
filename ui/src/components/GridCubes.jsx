@@ -59,7 +59,7 @@ function AxisLines({ axisLength, gridSize, cubeSize }) {
 function GridLines({ gridSize, cubeSize }) {
   const gridElements = useMemo(() => {
     const elements = [];
-    const maxCoord = (gridSize + 1) * cubeSize;
+    const maxCoord = gridSize * cubeSize;
     const minCoord = -maxCoord;
 
     const lineMaterial = (
@@ -114,18 +114,18 @@ function GridLines({ gridSize, cubeSize }) {
   return <group>{gridElements}</group>;
 }
 
-const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
+const GridCubes = ({ gridSize, cubeSize, opacity }) => {
   const { containingCubes } = useStore();
   const colors = ['#ff69b4', '#00ced1']; // Pink and turquoise
 
   const cubes = [];
-  for (let x = (-gridSize + 1); x < gridSize; x++) {
-    for (let y = (-gridSize + 1); y < gridSize; y++) {
-      for (let z = (-gridSize + 1); z < gridSize; z++) {
+  for (let x = -gridSize; x < gridSize; x++) {
+    for (let y = -gridSize; y < gridSize; y++) {
+      for (let z = -gridSize; z < gridSize; z++) {
         const position = [
-          x * cubeSize,
-          y * cubeSize,
-          z * cubeSize,
+          x * cubeSize + cubeSize / 2,
+          y * cubeSize + cubeSize / 2,
+          z * cubeSize + cubeSize / 2,
         ];
         const colorIndex = (Math.abs(x) + Math.abs(y) + Math.abs(z)) % 2;
         cubes.push(
@@ -148,7 +148,7 @@ const GridCubes = ({ gridSize = 2, cubeSize = 10, opacity = 0.6 }) => {
   return (
     <>
       {cubes}
-      {/* <GridLines gridSize={gridSize} cubeSize={cubeSize} /> */}
+      {<GridLines gridSize={gridSize} cubeSize={cubeSize} />}
       <AxisLines axisLength={(gridSize + 10) * cubeSize} gridSize={gridSize} cubeSize={cubeSize} />
     </>
   );
