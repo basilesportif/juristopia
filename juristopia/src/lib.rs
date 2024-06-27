@@ -1,5 +1,8 @@
 use kinode_process_lib::{await_message, call_init, println, Address, Response};
 
+mod solidity_abi;
+use solidity_abi::{increment, set_number};
+
 wit_bindgen::generate!({
     path: "target/wit",
     world: "process-v0",

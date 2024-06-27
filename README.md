@@ -6,3 +6,8 @@ Juristopia is a "universe", populated by a collection of worlds, which live on a
 In `sol-contracts` directory. 
   * install dependencies: `npm i`
   * run tests with logs: `forge test --vv`
+
+## Kinode Commands
+```
+m our@juristopia:juristopia:basilesex.os '{"SetNumber": 55}'
+```
