@@ -1,15 +1,19 @@
 use kinode_process_lib::{
-    await_message, call_init, get_blob, http, println, Address, Message, Request, Response,
+    await_message, call_init,
+    eth::{Address as EthAddress, Provider},
+    get_blob, http, println, Address, Message, Request, Response,
 };
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
-mod sol_abi;
-use sol_abi::{increment, set_number};
+mod sol_juristopia;
 
 wit_bindgen::generate!({
     path: "target/wit",
     world: "process-v0",
 });
+
+pub const JURISTOPIA_ADDRESS: &str = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Cube {
@@ -43,6 +47,7 @@ struct JuristopiaResponse {
 struct State {
     worlds: Vec<World>,
     channel_id: Option<u32>,
+    juristopia_caller: sol_juristopia::Caller,
 }
 
 impl State {
@@ -50,6 +55,10 @@ impl State {
         Self {
             worlds: vec![],
             channel_id: None,
+            juristopia_caller: sol_juristopia::Caller::new(
+                EthAddress::from_str(JURISTOPIA_ADDRESS).unwrap(),
+                Provider::new(31337, 5),
+            ),
         }
     }
 }
@@ -85,6 +94,9 @@ fn handle_message(our: &Address, state: &mut State) -> anyhow::Result<()> {
     /* debug only */
     let body: serde_json::Value = serde_json::from_slice(message.body())?;
     println!("got {body:?}");
+
+    let cost = state.juristopia_caller.spawn_cost(2, 1)?;
+    println!("cost: {} WEI", cost.to_dec_string());
 
     match message {
         Message::Request { ref body, .. } => {

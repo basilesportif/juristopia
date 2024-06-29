@@ -1,0 +1,741 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_god",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_cubeHalfSide",
+        "type": "int128",
+        "internalType": "int128"
+      },
+      {
+        "name": "_spawnBaseCost",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_spawnDensityGrowthFactor",
+        "type": "int256",
+        "internalType": "SD59x18"
+      },
+      {
+        "name": "_spawnDistanceGrowthFactor",
+        "type": "int256",
+        "internalType": "SD59x18"
+      },
+      {
+        "name": "_portalBaseCost",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_portalDistanceGrowthFactor",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "containingCube",
+    "inputs": [
+      {
+        "name": "p",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "coordToWorld",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "location",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "containingCube",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "commitmentHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "createPortal",
+    "inputs": [
+      {
+        "name": "p1",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "p2",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "commitmentHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "createPortalCost",
+    "inputs": [
+      {
+        "name": "distance",
+        "type": "int256",
+        "internalType": "int256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "cubeCoordToDensity",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int32",
+        "internalType": "int32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "cubeHalfSide",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int128",
+        "internalType": "int128"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "god",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "hashCoords",
+    "inputs": [
+      {
+        "name": "p",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "pointDistance",
+    "inputs": [
+      {
+        "name": "p1",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "p2",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256",
+        "internalType": "int256"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "portalBaseCost",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "portalDistanceGrowthFactor",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "portals",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "spawnBaseCost",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "spawnCost",
+    "inputs": [
+      {
+        "name": "_density",
+        "type": "int32",
+        "internalType": "int32"
+      },
+      {
+        "name": "_distanceFromCenter",
+        "type": "int256",
+        "internalType": "int256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "spawnDensityGrowthFactor",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "spawnDistanceGrowthFactor",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "spawnWorld",
+    "inputs": [
+      {
+        "name": "p",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "commitmentHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "event",
+    "name": "PortalCreated",
+    "inputs": [
+      {
+        "name": "worldCoord1",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "worldCoord2",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "commitmentHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "WorldSpawned",
+    "inputs": [
+      {
+        "name": "worldCoord",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "location",
+        "type": "tuple",
+        "indexed": false,
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "containingCube",
+        "type": "tuple",
+        "indexed": false,
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      },
+      {
+        "name": "commitmentHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_MulDiv18_Overflow",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "y",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Convert_Overflow",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "int256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Convert_Underflow",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "int256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Exp2_InputTooBig",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Exp_InputTooBig",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Mul_InputTooSmall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Mul_Overflow",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "SD59x18"
+      },
+      {
+        "name": "y",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Sqrt_NegativeInput",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PRBMath_SD59x18_Sqrt_Overflow",
+    "inputs": [
+      {
+        "name": "x",
+        "type": "int256",
+        "internalType": "SD59x18"
+      }
+    ]
+  }
+]
