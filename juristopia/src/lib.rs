@@ -7,13 +7,15 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
 mod sol_juristopia;
+use sol_juristopia::Juristopia::Point;
 
 wit_bindgen::generate!({
     path: "target/wit",
     world: "process-v0",
 });
 
-pub const JURISTOPIA_ADDRESS: &str = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
+pub const JURISTOPIA_ADDRESS: &str = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
+pub const WALLET_KEY: &str = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Cube {
@@ -56,8 +58,9 @@ impl State {
             worlds: vec![],
             channel_id: None,
             juristopia_caller: sol_juristopia::Caller::new(
-                EthAddress::from_str(JURISTOPIA_ADDRESS).unwrap(),
+                JURISTOPIA_ADDRESS,
                 Provider::new(31337, 5),
+                WALLET_KEY,
             ),
         }
     }
@@ -95,8 +98,23 @@ fn handle_message(our: &Address, state: &mut State) -> anyhow::Result<()> {
     let body: serde_json::Value = serde_json::from_slice(message.body())?;
     println!("got {body:?}");
 
-    let cost = state.juristopia_caller.spawn_cost(2, 1)?;
-    println!("cost: {} WEI", cost.to_dec_string());
+    let p = Point { x: 6, y: 8, z: 7 };
+    let cost = state.juristopia_caller.spawn_cost_of_point(p).unwrap();
+    println!("cost: {} WEI", cost.to_string());
+
+    let tx_hash = state
+        .juristopia_caller
+        .spawn_world(
+            Point { x: 6, y: 8, z: 7 },
+            "test".to_string(),
+            "a stupid test world".to_string(),
+            [1u8; 32],
+            cost,
+        )
+        .unwrap();
+    println!("tx_hash: {:?}", tx_hash.to_string());
+
+    //state.juristopia_caller.get_world_spawn_logs()[].unwrap();
 
     match message {
         Message::Request { ref body, .. } => {

@@ -17,5 +17,5 @@ m our@juristopia:juristopia:basilesex.os '{"SetNumber": 55}'
 
 ### Deploy Solidity Contract
 ```
-orge script --rpc-url http://localhost:8545 script/Deploy.s.sol --broadcast   
+forge script --rpc-url http://localhost:8545 script/Deploy.s.sol --broadcast   
 ```

@@ -175,6 +175,13 @@ contract Juristopia {
         SD59x18 cost = convert(int256(spawnBaseCost)).mul(eToTheRT);
         return uint256(convert(cost));
     }
+
+    function spawnCostOfPoint(Point memory p) public view returns (uint256) {
+        Point memory cc = containingCube(p);
+        return
+            spawnCost(cubeCoordToDensity[hashCoords(cc)], pointDistance(p, cc));
+    }
+
     /**
      * @notice Spawns a new world at the given coordinates
      * @dev This function creates a new world in the Juristopia universe. It requires payment in ETH,
