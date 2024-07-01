@@ -61,6 +61,7 @@ impl State {
             juristopia_caller: sol_juristopia::Caller::new(
                 JURISTOPIA_ADDRESS,
                 Provider::new(31337, 5),
+                31337,
                 WALLET_KEY,
             ),
         }

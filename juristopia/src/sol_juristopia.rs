@@ -9,12 +9,16 @@ use alloy::{
 use alloy_primitives::{Bytes, FixedBytes, I256, U256};
 use alloy_rlp::Encodable;
 use alloy_sol_types::{sol, SolCall, SolEvent, SolValue};
-use kinode_process_lib::eth::{Address as EthAddress, BlockNumberOrTag, Filter, Log, Provider};
+use kinode_process_lib::{
+    eth::{Address as EthAddress, BlockNumberOrTag, Filter, Log, Provider},
+    println,
+};
 use std::str::FromStr;
 
 pub struct Caller {
     contract_address: String,
     provider: Provider,
+    chain_id: u64,
     wallet: PrivateKeySigner,
 }
 /* ABI import */
@@ -66,10 +70,16 @@ fn send_tx(
 }
 
 impl Caller {
-    pub fn new(contract_address: &str, provider: Provider, wallet_addr: &str) -> Self {
+    pub fn new(
+        contract_address: &str,
+        provider: Provider,
+        chain_id: u64,
+        wallet_addr: &str,
+    ) -> Self {
         Self {
             contract_address: contract_address.to_string(),
             provider,
+            chain_id,
             wallet: PrivateKeySigner::from_str(wallet_addr).unwrap(),
         }
     }

@@ -15,9 +15,10 @@ In `sol-contracts` directory.
 m our@juristopia:juristopia:basilesex.os '{"SetNumber": 55}'
 ```
 
-### Deploy Solidity Contract
+### Build and Deploy Solidity Contract
+From the `sol-contracts` directory
 ```
+# build and put the ABI into juristopia/abi/Juristopia.json
+./build-with-abi.sh
 forge script --rpc-url http://localhost:8545 script/Deploy.s.sol --broadcast   
-# put the ABI into juristopia/abi/Juristopia.json
-./update-abi.sh
 ```
