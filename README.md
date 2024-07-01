@@ -18,4 +18,6 @@ m our@juristopia:juristopia:basilesex.os '{"SetNumber": 55}'
 ### Deploy Solidity Contract
 ```
 forge script --rpc-url http://localhost:8545 script/Deploy.s.sol --broadcast   
+# put the ABI into juristopia/abi/Juristopia.json
+./update-abi.sh
 ```

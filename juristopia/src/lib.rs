@@ -1,3 +1,4 @@
+use alloy_sol_types::SolEvent;
 use kinode_process_lib::{
     await_message, call_init,
     eth::{Address as EthAddress, Provider},
@@ -7,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
 mod sol_juristopia;
-use sol_juristopia::Juristopia::Point;
+use sol_juristopia::{Juristopia, Juristopia::Point};
 
 wit_bindgen::generate!({
     path: "target/wit",
@@ -102,19 +103,28 @@ fn handle_message(our: &Address, state: &mut State) -> anyhow::Result<()> {
     let cost = state.juristopia_caller.spawn_cost_of_point(p).unwrap();
     println!("cost: {} WEI", cost.to_string());
 
-    let tx_hash = state
-        .juristopia_caller
-        .spawn_world(
-            Point { x: 6, y: 8, z: 7 },
-            "test".to_string(),
-            "a stupid test world".to_string(),
-            [1u8; 32],
-            cost,
-        )
-        .unwrap();
-    println!("tx_hash: {:?}", tx_hash.to_string());
+    /*
+    match state.juristopia_caller.spawn_world(
+        Point { x: 6, y: 8, z: 7 },
+        "test".to_string(),
+        "a stupid test world".to_string(),
+        [1u8; 32],
+        cost,
+    ) {
+        Ok(tx_hash) => {
+            println!("spawnWorld tx_hash: {:?}", tx_hash.to_string());
+        }
+        Err(e) => {
+            println!("Error spawning world: {:?}", e);
+        }
+    }
+    */
 
-    //state.juristopia_caller.get_world_spawn_logs()[].unwrap();
+    if let Ok(logs) = state.juristopia_caller.get_world_spawn_logs() {
+        logs.iter()
+            .filter_map(|log| Juristopia::WorldSpawned::decode_log_data(log.data(), true).ok())
+            .for_each(|event| println!("WorldSpawned: {:?}", event));
+    }
 
     match message {
         Message::Request { ref body, .. } => {

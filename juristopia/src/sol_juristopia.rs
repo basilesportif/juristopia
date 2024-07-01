@@ -1,5 +1,6 @@
 use alloy::{
     consensus::{SignableTransaction, TxEip1559, TxEnvelope},
+    network::eip2718::Encodable2718,
     network::TxSignerSync,
     primitives::TxKind,
     rpc::types::eth::TransactionRequest,
@@ -33,6 +34,7 @@ fn send_tx(
     gas_limit: u128,
     max_fee_per_gas: u128,
     max_priority_fee_per_gas: u128,
+    value: U256,
 ) -> anyhow::Result<FixedBytes<32>> {
     let nonce = provider
         .get_transaction_count(signer.address(), None)
@@ -47,13 +49,14 @@ fn send_tx(
         max_fee_per_gas: max_fee_per_gas,
         max_priority_fee_per_gas: max_priority_fee_per_gas,
         input: call,
+        value: value,
         ..Default::default()
     };
 
     let sig = signer.sign_transaction_sync(&mut tx)?;
     let signed = TxEnvelope::from(tx.into_signed(sig));
     let mut buf = vec![];
-    signed.encode(&mut buf);
+    signed.encode_2718(&mut buf);
 
     let result = provider.send_raw_transaction(buf.into());
     match result {
@@ -71,23 +74,13 @@ impl Caller {
         }
     }
 
-    pub fn get_world_spawn_logs(&self) -> anyhow::Result<()> {
+    pub fn get_world_spawn_logs(&self) -> anyhow::Result<Vec<Log>> {
         let filter = Filter::new()
             .address(EthAddress::from_str(&self.contract_address).unwrap())
             .from_block(0)
             .to_block(BlockNumberOrTag::Latest);
         match self.provider.get_logs(&filter) {
-            Ok(logs) => {
-                for log in logs {
-                    if log.topics()[0] == Juristopia::WorldSpawned::SIGNATURE_HASH {
-                        println!(
-                            "WorldSpawned: {:?}",
-                            Juristopia::WorldSpawned::decode_log_data(log.data(), true)
-                        );
-                    }
-                }
-                Ok(())
-            }
+            Ok(logs) => Ok(logs),
             Err(_) => {
                 println!("failed to fetch WorldSpawned logs!");
                 Err(anyhow::anyhow!("Error fetching WorldSpawned logs!"))
@@ -114,7 +107,7 @@ impl Caller {
     /// Spawns a new world in the Juristopia universe.
     ///
     /// # Important
-    /// Before calling this function, you should first call `spawn_cost` to determine
+    /// Before calling this function, you should first call `spawn_cost_of_point` to determine
     /// the correct `value` to pass. The `value` parameter represents the cost in wei
     /// to spawn the world, which is calculated based on the density and distance from
     /// the center of the containing cube.
@@ -134,7 +127,6 @@ impl Caller {
     /// This function will return an error if:
     /// - The transaction fails to send
     /// - The contract reverts the transaction (e.g., if not enough ETH is sent)
-
     pub fn spawn_world(
         &self,
         p: Juristopia::Point,
@@ -159,6 +151,7 @@ impl Caller {
             1500000,
             10000000000,
             300000000,
+            value,
         ) {
             Ok(tx_hash) => Ok(tx_hash),
             Err(e) => Err(anyhow::anyhow!("Error spawning world: {:?}", e)),
