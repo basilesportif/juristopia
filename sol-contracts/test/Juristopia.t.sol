@@ -110,6 +110,31 @@ contract JuristopiaTest is Test {
         );
     }
 
+    function test_SpawnCostPoint() public {
+        // Test points
+        Point[] memory testPoints = new Point[](3);
+        testPoints[0] = Point({x: 1, y: 1, z: 1});
+        testPoints[1] = Point({x: 7, y: 8, z: 9});
+        testPoints[2] = Point({x: -3, y: 4, z: -5});
+
+        for (uint i = 0; i < testPoints.length; i++) {
+            Point memory p = testPoints[i];
+            Point memory cc = juristopia.containingCube(p);
+            bytes32 cubeCoord = juristopia.hashCoords(cc);
+            int32 density = juristopia.cubeCoordToDensity(cubeCoord);
+            int256 distance = juristopia.pointDistance(p, cc);
+
+            uint256 expectedCost = juristopia.spawnCost(density, distance);
+            uint256 actualCost = juristopia.spawnCostOfPoint(p);
+
+            assertEq(
+                actualCost,
+                expectedCost,
+                "SpawnCostOfPoint calculation mismatch for point"
+            );
+        }
+    }
+
     function test_SpawnWorld() public {
         Point memory testPoint = Point({x: 7, y: 8, z: 9});
         string memory testName = "Test World";

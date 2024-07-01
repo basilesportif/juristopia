@@ -470,6 +470,42 @@
   },
   {
     "type": "function",
+    "name": "spawnCostOfPoint",
+    "inputs": [
+      {
+        "name": "p",
+        "type": "tuple",
+        "internalType": "struct Point",
+        "components": [
+          {
+            "name": "x",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "y",
+            "type": "int128",
+            "internalType": "int128"
+          },
+          {
+            "name": "z",
+            "type": "int128",
+            "internalType": "int128"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "spawnDensityGrowthFactor",
     "inputs": [],
     "outputs": [
